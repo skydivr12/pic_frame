@@ -32,7 +32,12 @@ unset nothing
 clear
 }
 
-mkdir -p $BIN_DIR $BAK_DIR $SYS_DIR $LOG_DIR $SRC_DIR
+sudo chmod +x $HOME/pic_frame/bin/*
+sudo chmod +x $HOME/pic_frame/src/*
+sudo chmod +644 $HOME/pic_frame/systemd/*
+sudo ln -sf $HOME/pic_frame/bin/* /usr/local/bin/
+sudo cp $HOME/pic_frame/systemd/* /etc/systemd/system/
+
 # Introduction text.
 echo ' Welcome. I am about to install all the software necessary to' &&
 echo ' run your new digital picture frame. There are a few things that' &&
