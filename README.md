@@ -12,7 +12,7 @@ on a raspberry pi. It will work on all models of raspberry pi although it is not
 
 On a fresh install of Raspberry Pi OS with desktop,
 Copy the pic_frame directory into your home directory.
-Run install script with 'bash install_master.sh'
+Run install script with 'bash pic_frame/install_master.sh'
 There are 2 points of user interaction during the install process. Follow the instructions and once the installation is complete
 the pictureframe can be operational.
 
