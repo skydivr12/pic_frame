@@ -422,9 +422,7 @@ get_input() {
 replace_file() {
   echo " Decision time. Do you want to save and use these settings?"
   select i in "Yes" "No" "I don't know"; do
-    if [ "$i" == "" ]; then
-      echo "$ERR_REPLY1"
-    elif [ "$i" == "I don't know" ]; then
+    if [ "$i" == "I don't know" ]; then
       echo " I don't understand why you have to be so indecisive. This isn't a hard decision."
       echo " In fact, I'll make it easy for you. If you say yes,  will backup the current"
       echo " settings and if you don't like the changes, you can restore the current settings."
@@ -442,6 +440,8 @@ replace_file() {
       echo " Restarting slideshow"
       sudo systemctl restart pi3donpi4.service
       break
+    else
+      echo "$ERR_REPLY1"
     fi
   done
 }
@@ -460,10 +460,7 @@ select_options() {
     clear
     echo " ####################  ${OPTION_SET^^}  ####################"
     select i in "${THESE_OPTIONS[@]}" "Finished"; do
-      if [ "$i" == "" ]; then
-        echo "$ERR_REPLY1" && sleep 1
-        break
-      elif [ "$i" == "Finished" ]; then
+      if [ "$i" == "Finished" ]; then
         break
       elif [[ "${THESE_OPTIONS[@]}" =~ "$i" ]]; then
         VAR="$i"
@@ -518,14 +515,12 @@ set_menu() {
 yes_no() {
   OPTIONS=( "Yes" "No" )
   select i in "${OPTIONS[@]}"; do
-    if [ "$i" == "" ]; then
-      echo " Invalid option. Please try again."
-    elif [ "$i" == "Yes" ]; then
+    if [ "$i" == "Yes" ]; then
       VAR2=True; break
     elif [ "$i" == "No" ]; then
       VAR2=False; break
     else
-      echo " Invalid option. Please try again."
+      echo "$ERR_REPLY1"
     fi
   done
 }
