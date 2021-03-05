@@ -16,13 +16,6 @@ Run install script with 'bash install_master.sh'
 There are 2 points of user interaction during the install process. Follow the instructions and once the installation is complete
 the pictureframe can be operational.
 
-Once installation is complete enter the following commands in the terminal:
-sudo chmod +x ~/pic_frame/bin/*
-sudo chmod +x ~/pic_frame/src/*
-sudo chmod +644 ~/pic_frame/systemd/*
-sudo ln -s ~/pic_frame/bin* /usr/local/bin/
-sudo cp ~/pic_frame/systemd/* /etc/systemd/system/
-
 Now everything can be managed through the CLI via a simple menu system.
 
 Start the menu by typing 'menu' into the terminal
