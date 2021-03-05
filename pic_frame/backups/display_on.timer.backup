@@ -1,8 +1,0 @@
-[Unit]
-Description=Schedules turning on monitor.
-
-[Timer]
-OnCalendar=7:00
-
-[Install]
-WantedBy=timers.target

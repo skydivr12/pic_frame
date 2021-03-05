@@ -1,7 +1,0 @@
-[Unit]
-Description=Run script to turn off monitor.
-After=multi-user.target
-
-[Service]
-Type=simple
-ExecStart=sh /usr/local/bin/turn_display_off
