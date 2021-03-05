@@ -373,6 +373,14 @@ get_input() {
         else VAR2="$D"; break
         fi
       done
+    elif [ "$VAR" == "pic_dir" ]; then
+      get_main_directories
+      select D in "${MAINS_NAME[@]}" "Back"; do
+        if [ "$D" == "Back" ]; then VAR2="$VAR1"; break
+        elif [ "$D" == "" ]; then echo "$ERR_REPLY1"
+        else VAR2="$D"; break
+        fi
+      done      
     else
       read -p " Enter a new value. : " VAR2
       if [ "$VAR2" == "" ]; then
