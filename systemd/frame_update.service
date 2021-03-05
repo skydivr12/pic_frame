@@ -1,5 +1,0 @@
-[Unit]
-Description=Run script that runs scripts downloaded from emails for purpose of updating pictureframe functionality.
-
-[Service]
-ExecStart=sh /usr/local/bin/frame_update

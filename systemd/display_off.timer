@@ -1,8 +1,0 @@
-[Unit]
-Description=Schedules turning off monitor.
-
-[Timer]
-OnCalendar=21:00
-
-[Install]
-WantedBy=timers.target
