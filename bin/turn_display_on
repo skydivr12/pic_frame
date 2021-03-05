@@ -1,0 +1,5 @@
+#!/bin/bash
+#turn_display_on
+#Turns on signal to monitor. Does not effect computer power.
+
+vcgencmd display_power 1

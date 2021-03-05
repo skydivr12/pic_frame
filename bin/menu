@@ -1,0 +1,61 @@
+#!/bin/bash
+
+. ~/pic_frame/src/picture_frame_variables
+
+set_src
+
+while true; do
+  Z=0
+  while true; do
+    clear
+    echo "####################  $HEADER  ####################"
+    echo "####################  $SUB_HEADER  ####################"
+    select OPT in $MENU; do
+      if [ "$OPT" == "" ]; then
+#        clear
+        echo " Deleting all files in 3 seconds."
+        sleep 1 && echo " 2"
+        sleep 1 && echo " 1"
+        sleep 1 && echo " Deleting files." && sleep 1
+#        clear &&
+        echo " Just kidding! HaHaHa" && sleep 3
+        Z=1; break
+      elif [ "$OPT" == "Quit" ]; then
+#        clear
+        echo " you selected quit. quitting"
+        Z=2; break
+      elif [ "$OPT" == "Back" ]; then
+        go_back
+        echo " you selected back. going back."
+#        clear
+        Z=1; break
+      elif [[ "${OPTIONS[@]}" =~ "$OPT" ]]; then
+        if [ -f "$(find $SRC_DIR -name $OPT)" ]; then
+          advance_menu
+          echo " going to the next menu"
+#          clear
+        elif [ -f "$(find $DIR -name $OPT)" ]; then
+          $DIR/$OPT
+          echo " executing script $OPT"
+#          clear
+        else
+          . $F
+          $OPT
+#          if [ -f $f2 ]; then sudo mv $f2 $f1 && sudo systemctl restart pi3donpi4.service; fi
+          echo " executing function $OPT"
+#          clear
+        fi
+        Z=0; break
+      else
+#        clear
+        Z=0; break
+      fi
+    done
+    if [ "$Z" -gt "0" ]; then
+      break
+    fi
+  done
+  if [ "$Z" -gt "1" ]; then
+    break
+  fi
+done

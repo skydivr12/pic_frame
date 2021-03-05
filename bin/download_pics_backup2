@@ -1,0 +1,71 @@
+#!/bin/bash
+
+NOW=$(date +"%D_%T")
+UPDAT_DIR=$HOME/.frame_updates
+LOG1="$HOME/pic_frame/logs/download_log.txt"
+LOG1_LENGTH=$(wc -l < $LOG1)
+LOG2="$HOME/pic_frame/logs/update_log.txt"
+LOG2_LENGTH=$(wc -l < $LOG2)
+BIN_DIR="$HOME/pic_frame/bin"
+EMAILS_BACKUP=$HOME/pic_frame/backups/get_images_from_emails.py.backup
+JUNK=$HOME/unknown_file_types
+RC_CONF=$HOME/.config/rclone/rclone.conf
+readarray -t RCSOURCES < <(grep "\[[a-zA-Z]*\]" $RC_CONF | cut -d[ -f2 | cut -d] -f1)
+LEN1="${#RCSOURCES[@]}"
+readarray -t MAILSOURCES < <( find "$BIN_DIR" -name "*.mail.py" -type f | rev | cut -d/ -f1 | rev | cut -d. -f1 )
+LEN2="${#MAILSOURCES[@]}"
+SOURCES=( "${MAILSOURCES[@]}" "${RCSOURCES[@]}" )
+TEMP_EMAILS=/attachments
+TODAY=$(date +"%Y_%m_%d")
+
+if [ "$LOG1_LENGTH" -gt "1000" ]; then mv $LOG1 $LOG1_$TODAY; fi
+if [ "$LOG2_LENGTH" -gt "1000" ]; then mv $LOG2 $LOG2_$TODAY; fi
+
+set_ARR3() {
+  ARR2=( "$(find $DWNLD_DIR -type f -exec echo {} +)" )
+  ARR3=( "$(echo ${ARR1[@]} ${ARR2[@]} | tr ' ' '\n' | sort | uniq -u | tr '\n' ' ')" )
+}
+
+for (( i=0; i<$LEN2; i++ )); do
+  EMAILS="${MAILSOURCES[$i]}".mail.py
+  sudo python3 $BIN_DIR/$EMAILS 2>&1 | tee -a $LOG1
+  DWNLD_DIR=$TEMP_EMAILS
+  if [ -f "$(find $DWNLD_DIR -type f)" ]; then
+    sudo find $DWNLD_DIR -name "* *" -exec rename 's/ /_/g' {} + 2>&1 | tee -a $LOG1
+    sudo rclone move -v $DWNLD_DIR/ ${RCSOURCES[0]}:Pictures/emails/$TODAY/ 2>&1 | tee -a $LOG1
+  fi
+done
+
+for (( i=0; i<$LEN1; i++ )); do
+  DWNLD_DIR=$HOME/Pictures/"${RCSOURCES[$i]}"
+  #If download directory doesnt exist, create it.
+  if [ ! -d "$DWNLD_DIR" ]; then sudo mkdir -p $DWNLD_DIR; fi
+  ARR1=( "$(find $DWNLD_DIR -type f -exec echo {} +)" )
+  sudo rclone sync -v ${RCSOURCES[$i]}:Pictures $DWNLD_DIR/
+  sudo find $DWNLD_DIR -name '* *' -type f -exec rename 's/ /_/g' {} + 2>&1 | tee -a $LOG1
+  set_ARR3
+  if [ "${#ARR3[@]}" -gt "0" ]; then
+    for F in "${ARR3[@]}"; do
+      case $F in
+        *.sh)
+          sudo mv $F $UPDAT_DIR/ &&
+          echo "At $NOW $F was put in $UPDAT_DIR/" >> $LOG2
+          ;;
+        *.[Tt][Ii][Ff][Ff] | *.[Dd][Nn][Gg] | *.[Pp][Nn][Gg] | *.[Jj][Pp][Gg] | *.[Jj][Pp][Ee][Gg] | *.[Hh][Ee][Ii][Ff] | *.[Hh][Ee][Ii][Cc])
+          mogrify -auto-orient $F;
+          echo " Downloaded at $NOW   :  $(basename $F)" >> $LOG1
+          ;;
+        *)
+          if [ ! -d "$JUNK" ]; then mkdir -p $JUNK; fi
+          sudo mv $F $JUNK &&
+          echo "At $NOW $(basename $F) was put in $JUNK/" >> $LOG1
+          ;;
+      esac
+    done
+    sudo rclone sync -v $DWNLD_DIR/ ${RCSOURCES[$i]}:Pictures
+    while [ "$(find ~/Pictures -mindepth 1 -type d -empty)" ]; do
+      sudo find ~/Pictures -mindepth 1 -type d -empty -exec rmdir {} +
+    done
+  fi
+done
+
