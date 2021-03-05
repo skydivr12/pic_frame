@@ -1,0 +1,108 @@
+#!/bin/bash
+
+. ~/pic_frame/src/picture_frame_variables
+SERVICES=( "display_off.timer" "display_on.timer" "download_pics.timer" "pi3donpi4.service" "frame_update.path" )
+
+disable_frame_services() {
+  for SERV in "${SERVICES[@]}"; do
+    sudo systemctl stop $SERV
+    sudo systemctl disable $SERV
+  done
+}
+
+enable_frame_services() {
+  sudo systemctl daemon-reload
+  for SERV in "${SERVICES[@]}"; do
+    sudo systemctl enable $SERV
+  done
+}
+
+set_display_overscan() {
+  YN=( "Yes" "No" )
+  echo " Is there a black border around the screen?"
+  select OPT in "${YN[@]}"; do
+    if [ "$OPT" == "" ]; then
+      echo " Invalid option. Please try again."
+    elif [ "$OPT" == "Yes" ]; then
+      OVERSCAN=1
+      break
+    elif [ "$OPT" == "No" ]; then
+      OVERSCAN=0
+      break
+    else
+      echo "Something went wrong. Please try again."
+    fi
+  done
+  sudo raspi-config nonint do_overscan $OVERSCAN
+}
+
+set_static_ip() {
+  cp $IP_FILE_BACKUP $IP_FILE_EDIT &&
+  echo "interface wlan0" >> $IP_FILE_EDIT &&
+  echo "static ip_address=$MY_IP/24" >> $IP_FILE_EDIT &&
+  echo "A file editor will open in a moment. use the arrow keys" &&
+  echo "to scroll to the bottom. The last line of the file should" &&
+  echo "say 'static ip_address=' followed by your current ip" &&
+  echo "address. Change your ip address to a high enough number" &&
+  echo "to avoid any conflicts with automatic ip assignments from" &&
+  echo "your router."
+  read -p " Press enter when you are ready to proceed. : " nothing && unset nothing
+  sudo nano $IP_FILE_EDIT &&
+  echo "static routers=$my_gateway" >> $IP_FILE_EDIT &&
+  echo "static domain_name_servers=$my_gateway" >> $IP_FILE_EDIT
+  sudo mv $IP_FILE_EDIT $IP_FILE &&
+  sudo chown root:netdev $IP_FILE &&
+  sudo reboot
+}
+
+remove_static_ip() {
+  sudo cp $IP_FILE_BACKUP $IP_FILE
+}
+
+system_shutdown() {
+  echo " Are you sure you want to power off the system?"
+  select OPT in Yes No; do
+    if [ "$OPT" == "" ]; then
+      echo " Invalid option. Please try again."
+    elif [ "$OPT" == "Yes" ]; then
+      echo " Shutting down in 10 seconds."
+      sleep 10
+      sudo shutdown -h now
+    elif [ "$OPT" == "No" ]; then
+      break
+    else
+      echo " Something went wrong. Please try again."
+    fi
+  done
+}
+
+system_update() {
+  sudo apt update && sudo apt upgrade -y
+}
+
+turn_desktop_off() {
+  enable_frame_services &&
+  sudo raspi-config nonint do_boot_behaviour B2 &&
+  sudo cp $PICTUREFRAME_AUTOSTART $AUTOSTART_FILE &&
+  sudo reboot
+}
+
+turn_desktop_on() {
+  disable_frame_services &&
+  sudo raspi-config nonint do_boot_behaviour B4 &&
+  sudo cp $AUTOSTART_FILE_BACKUP $AUTOSTART_FILE &&
+  sudo reboot
+}
+
+turn_display_off() {
+  vcgencmd display_power 0
+}
+
+turn_display_on() {
+  vcgencmd display_power 1
+}
+
+Back() {
+  echo " This is function 7"
+}
+

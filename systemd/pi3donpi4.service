@@ -1,0 +1,15 @@
+[Unit]
+Description=Pi3d on Pi4
+After=multi-user.target
+
+[Service]
+Type=idle
+
+User=root
+ExecStart=xinit /usr/bin/python3 /home/pi/pi3d_demos/PictureFrame2020.py -- -s off -dpms -s noblank
+
+Restart=always
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
