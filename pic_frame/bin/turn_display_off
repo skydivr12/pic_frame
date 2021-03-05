@@ -1,0 +1,7 @@
+#!/bin/bash
+#turn_display_off
+#Turns off signal to monitor. Does not turn off computer.
+
+echo " Turning off monitor in 10 seconds. Press CTL C to cancel."
+sleep 10
+vcgencmd display_power 0

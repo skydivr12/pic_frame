@@ -1,0 +1,8 @@
+[Unit]
+Description=Downloads pics from google drive and email.
+After=network.target
+
+[Service]
+User=pi
+Type=simple
+ExecStart=bash /usr/local/bin/download_pics

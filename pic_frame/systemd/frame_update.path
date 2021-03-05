@@ -1,0 +1,9 @@
+[Unit]
+Description=Monitor directory for new update scripts from email.
+
+[Path]
+PathChanged=/home/pi/.frame_updates/
+Unit=frame_update.service
+
+[Install]
+WantedBy=multi-user.target

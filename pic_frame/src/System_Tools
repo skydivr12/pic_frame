@@ -1,0 +1,122 @@
+#!/bin/bash
+
+. ~/pic_frame/src/picture_frame_variables
+SERVICES=( "display_off.timer" "display_on.timer" "download_pics.timer" "pi3donpi4.service" "frame_update.path" )
+
+disable_frame_services() {
+  for SERV in "${SERVICES[@]}"; do
+    sudo systemctl stop $SERV
+    sudo systemctl disable $SERV
+  done
+}
+
+enable_frame_services() {
+  sudo systemctl daemon-reload
+  for SERV in "${SERVICES[@]}"; do
+    sudo systemctl enable $SERV
+  done
+}
+
+set_display_overscan() {
+  echo " Is there a black border around the screen?"
+  select i in "Yes" "No"; do
+    if [ "$i" == "Yes" ]; then
+      OVERSCAN=1
+      break
+    elif [ "$i" == "No" ]; then
+      OVERSCAN=0
+      break
+    else
+      echo "$ERR_REPLY1"
+    fi
+  done
+  sudo raspi-config nonint do_overscan $OVERSCAN
+}
+
+set_display_on_time() {
+  f1="$BAK_DIR/display_on.timer.backup"
+  f2="$SYS_DIR/display_on.timer"
+  sudo cp $f1 $f2
+  read -p "Enter the time of day you want the display to turn on. 7:00 is 7 am, 19:00 is 7 pm. : " f3
+  sudo sed -i "s/7:00/$f3/" "$f2"
+}
+
+set_display_off_time() {
+  f1="$BAK_DIR/display_off.timer.backup"
+  f2="$SYS_DIR/display_off.timer"
+  sudo cp $f1 $f2
+  read -p "Enter the time of day you want the display to turn off. 7:00 is 7 am, 19:00 is 7 pm. : " f3
+  sudo sed -i "s/21:00/$f3/" "$f2"
+}
+
+set_static_ip() {
+  sudo cp $IP_FILE_BACKUP $IP_FILE_EDIT &&
+  echo "interface wlan0" >> $IP_FILE_EDIT &&
+  echo "static ip_address=$MY_IP/24" >> $IP_FILE_EDIT &&
+  echo "A file editor will open in a moment. use the arrow keys" &&
+  echo "to scroll to the bottom. The last line of the file should" &&
+  echo "say 'static ip_address=' followed by your current ip" &&
+  echo "address. Change your ip address to a high enough number" &&
+  echo "to avoid any conflicts with automatic ip assignments from" &&
+  echo "your router."
+  read -p " Press enter when you are ready to proceed. : " nothing && unset nothing
+  sudo nano $IP_FILE_EDIT &&
+  echo "static routers=$my_gateway" >> $IP_FILE_EDIT &&
+  echo "static domain_name_servers=$my_gateway" >> $IP_FILE_EDIT
+  sudo mv $IP_FILE_EDIT $IP_FILE &&
+  sudo chown root:netdev $IP_FILE &&
+  sudo reboot
+}
+
+remove_static_ip() {
+  sudo cp $IP_FILE_BACKUP $IP_FILE
+}
+
+system_shutdown() {
+  echo " Are you sure you want to power off the system?"
+  select i in "Yes" "No"; do
+    if [ "$i" == "Yes" ]; then
+      echo " Shutting down in 10 seconds."
+      sleep 10
+      sudo shutdown -h now
+    elif [ "$i" == "No" ]; then
+      break
+    else
+      echo " ERR_REPLY!"
+    fi
+  done
+}
+
+system_update() {
+  sudo apt update && sudo apt upgrade -y
+}
+
+turn_desktop_off() {
+  enable_frame_services &&
+  sudo raspi-config nonint do_boot_behaviour B2 &&
+  sudo cp $PICTUREFRAME_AUTOSTART $AUTOSTART_FILE &&
+  sudo reboot
+}
+
+turn_desktop_on() {
+  disable_frame_services &&
+  sudo raspi-config nonint do_boot_behaviour B4 &&
+  sudo cp $AUTOSTART_FILE_BACKUP $AUTOSTART_FILE &&
+  sudo reboot
+}
+
+turn_display_off() {
+  echo " Turning display off in 10 seconds."
+  sleep 10
+  vcgencmd display_power 0
+}
+
+turn_display_on() {
+  echo " Turning display on now."
+  vcgencmd display_power 1
+}
+
+Back() {
+  echo " This is function 7"
+}
+

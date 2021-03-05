@@ -1,0 +1,13 @@
+#!/bin/bash
+#frame_update
+#Executes all .sh files found in .frame_updates folder and removes them.
+#This allows updates to pictureframe software to be updated by the builder.
+
+. $HOME/pic_frame/src/picture_frame_variables
+
+if [ -f "$(find "$UPDAT_DIR" -name "*.sh")" ]; then
+  for f in "$(find "$UPDAT_DIR" -name "*.sh")"; do
+    sudo bash $f
+    sudo rm $f
+  done
+fi

@@ -1,0 +1,8 @@
+[Unit]
+Description=Schedules turning off monitor.
+
+[Timer]
+OnCalendar=22:00
+
+[Install]
+WantedBy=timers.target
