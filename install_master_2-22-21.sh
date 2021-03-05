@@ -37,6 +37,7 @@ sudo chmod +x $HOME/pic_frame/src/*
 sudo chmod +644 $HOME/pic_frame/systemd/*
 sudo ln -sf $HOME/pic_frame/bin/* /usr/local/bin/
 sudo cp $HOME/pic_frame/systemd/* /etc/systemd/system/
+mkdir -p $LOG_DIR
 
 # Introduction text.
 echo ' Welcome. I am about to install all the software necessary to' &&
