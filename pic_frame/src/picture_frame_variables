@@ -33,8 +33,6 @@ readarray -t RCSOURCES < <(grep "\[[a-zA-Z]*\]" $RC_CONF 2>/dev/null | cut -d[ -
 readarray -t MAILSOURCES < <( find "$BIN_DIR" -name "*.mail.py" -type f 2>/dev/null | rev | cut -d/ -f1 | rev | cut -d. -f1 )
 SOURCES=( "${MAILSOURCES[@]}" "${RCSOURCES[@]}" )
 UPDAT_DIR=$HOME/.frame_updates
-#LOG2=$UPDAT_DIR/update_log.txt
-#LOG1=$UPDAT_DIR/download_log.txt
 EMAILS=$BIN_DIR/get_images_from_emails.py
 EMAILS_FIL=$(basename "$EMAILS")
 EMAILS_BACKUP=$HOME/pic_frame/backups/$EMAILS_FIL.backup
@@ -95,6 +93,10 @@ readarray -t SUBS < <( find ~/Pictures -mindepth 1 -type d )
 SUBS_NAME=(); for f in "${SUBS[@]}"; do SUBS_NAME+=( ${f#*/*/*/*/} ); done
 }
 
+get_main_directories() {
+readarray -t MAINS < <( find ~/Pictures -maxdepth 1 -type d )
+MAINS_NAME=(); for d in "${MAINS[@]}"; do MAINS_NAME+=( ${d#*/*/*/} ); done
+}
 
 continue_prompt() {
 read -p ' If you understand and are ready to continue, hit enter. ' nothing &&
