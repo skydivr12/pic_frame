@@ -1,5 +1,0 @@
-#!/bin/bash
-#turn_display_off
-#Turns off signal to monitor. Does not turn off computer.
-
-vcgencmd display_power 0
