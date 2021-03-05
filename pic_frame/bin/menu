@@ -1,0 +1,91 @@
+#!/bin/bash
+
+PS3=" Choose an option. : " #select function prompt
+
+#Menu script variables
+SRC_DIR=~/pic_frame/src
+F=$SRC_DIR/Main_Menu
+MENU_PATH=$(basename "$F")
+ERR_REPLY1=" Invalid option. Please select one of the listed options."
+
+set_src() {
+  SRC=$F
+  HEADER=$MENU_PATH
+  SUB_HEADER=$(if [ ! "$HEADER" == "Main_Menu" ]; then echo "${HEADER##*/}"; else echo "$HEADER"; fi)
+  set_menu
+}
+
+advance_menu() {
+  MENU_PATH="$MENU_PATH"/"$OPT"
+  F="$SRC_DIR"/"$OPT"
+  set_src
+}
+
+go_back() {
+  F="$SRC_DIR"/$(echo "$MENU_PATH" | rev | cut -d/ -f2 | rev)
+  MENU_PATH=${MENU_PATH%/*}
+  set_src
+}
+
+
+set_menu() {
+  MENU="$(grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' $SRC | cut -d\( -f1)"
+  readarray -t OPTIONS < <( grep -E '^[[:space:]]*([[:alnum:]_]+[[:space:]]*\(\)|function[[:space:]]+[[:alnum:]_]+)' $SRC | cut -d\( -f1 )
+}
+
+set_src
+
+while true; do
+  Z=0
+  while true; do
+    clear
+    echo "####################  $HEADER  ####################"
+    echo "####################  $SUB_HEADER  ####################"
+    select OPT in $MENU; do
+      if [ "$OPT" == "" ]; then
+#        clear
+        echo " Deleting all files in 3 seconds."
+        sleep 1 && echo " 2"
+        sleep 1 && echo " 1"
+        sleep 1 && echo " Deleting files." && sleep 1
+#        clear &&
+        echo " Just kidding! HaHaHa" && sleep 3
+        Z=1; break
+      elif [ "$OPT" == "Quit" ]; then
+#        clear
+        echo " you selected quit. quitting"
+        Z=2; break
+      elif [ "$OPT" == "Back" ]; then
+        go_back
+        echo " you selected back. going back."
+#        clear
+        Z=1; break
+      elif [[ "${OPTIONS[@]}" =~ "$OPT" ]]; then
+        if [ "$(find $SRC_DIR -name $OPT)" ]; then
+          advance_menu
+          echo " going to the next menu"
+#          clear
+        elif [ "$(find $DIR -name $OPT)" ]; then
+          $DIR/$OPT
+          echo " executing script $OPT"
+#          clear
+        else
+          . $F
+          $OPT
+          echo " executing function $OPT"
+#          clear
+        fi
+        Z=0; break
+      else
+#        clear
+        Z=0; break
+      fi
+    done
+    if [ "$Z" -gt "0" ]; then
+      break
+    fi
+  done
+  if [ "$Z" -gt "1" ]; then
+    break
+  fi
+done
