@@ -126,7 +126,8 @@ fi
 if [ -d "$HOME/pi3d_demos" ]; then
   echo " Pi3D has already been installed and setup. Skipping."
 else
-  sudo pip3 install pi3d &&
+#  sudo pip3 install pi3d && #Stopped working 3-5-21
+  sudo pip install pi3d==2.42
   wget https://github.com/pi3d/pi3d_demos/archive/master.zip && unzip master.zip && rm master.zip &&
   mv pi3d_demos-master pi3d_demos &&
   sudo cp $FRAME_CONFIG $FRAME_CONFIG_BACKUP &&
@@ -136,7 +137,8 @@ fi
 
 # Installs other necessary software.
 sudo apt install -y mosquitto mosquitto-clients -y &&
-sudo pip3 install paho-mqtt &&
+#sudo pip3 install paho-mqtt &&  #stopped working 3-5-21
+sudo pip install paho-mqtt 
 sudo apt install php php-common gcc -y &&
 sudo apt install imagemagick -y &&
 sudo apt install rename &&
