@@ -64,8 +64,10 @@ PICTUREFRAME_AUTOSTART="$BAK_DIR/autostart.pictureframe"
 PI3DIR="$HOME/pi3d_demos"
 pfpy="PictureFrame2020.py"
 pfcpy="PictureFrame2020config.py"
-RC1=~/.config/rclone/rclone.conf
+RC1=$HOME/.config/rclone/rclone.conf
 RC2=/root/.config/rclone/rclone.conf
+#RC1=$HOME/fake_rclone.conf
+#RC2=$HOME/fake_rclone.conf.copy
 
 TIME_OPTIONS=( "time_delay" "fade_time" )
 BACKGROUND_OPTIONS=( "background" "blur_edges" "blur_amount" "blur_zoom" "edge_alpha" )
@@ -506,12 +508,13 @@ yes_no() {
 #####################################################################################################################
 
 get_RCSOURCES() {
-  readarray -t RCSOURCES1 < <(grep "\[[a-zA-Z]*\]" $RC1 2>/dev/null | cut -d[ -f2 | cut -d] -f1)
+  readarray -t RCSOURCES1 < <(grep "\[[a-zA-Z0-9]*\]" $RC1 2>/dev/null | cut -d[ -f2 | cut -d] -f1)
 }
 
 
 get_new_connections() {
-  readarray -t RCSOURCES2 < <(grep "\[[a-zA-Z]*\]" $RC1 2>/dev/null | cut -d[ -f2 | cut -d] -f1)
+  RCSOURCES2=()
+  readarray -t RCSOURCES2 < <(grep "\[[a-zA-Z0-9]*\]" $RC1 2>/dev/null | cut -d[ -f2 | cut -d] -f1)
   for F in "${RCSOURCES2[@]}"; do
     if [[ "${RCSOURCES1[@]}" =~ "$F" ]]; then
       continue
@@ -532,7 +535,7 @@ get_email_passwd() {
   if [ -f "$MAIL_FILE" ]; then
     echo " There is already a connection with that name."
   elif [ ! -f "$MAIL_FILE" ]; then
-    sudo cp $EMAILS_BACKUP $MAIL_FILE
+#    sudo cp $EMAILS_BACKUP $MAIL_FILE
     read -p " Enter your google password. : " GPASSWD
     echo " You will need your own secret hashtag for people to insert in the subject line of emails."
     read -p " What would you like your secret hashtag to be? : " HASHTAG
@@ -546,7 +549,7 @@ create_mail_file() {
   sed -i "s/enter-your-password-here/$GPASSWD/" "$MAIL_FILE"
   sed -i "s/#mypictures/$HASHTAG/" "$MAIL_FILE"
   sudo chmod +x $MAIL_FILE
-  sudo ln -s $MAIL_FILE /usr/local/bin/
+  sudo ln -sf $MAIL_FILE /usr/local/bin/
   echo " This email connection has been saved as $EMAILID"
 }
 
