@@ -31,3 +31,6 @@ Includes scripts to download pictures from emails and sync with google drive. Wi
 Can be used with multiple google accounts and will keep each respective account's content seperate.
 If you can type "menu" you can setup and operate this Pi3d Pictureframe.
 
+3/10/2021
+ bug fixes in download_pics script
+ bug fixes in User Accounts functions
