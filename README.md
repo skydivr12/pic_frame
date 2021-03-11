@@ -13,7 +13,8 @@ can use. In this repository is an installation script for installing all necessa
 on a raspberry pi. It will work on all models of raspberry pi although it is not recommended on the raspberry pi 0.
 
 On a fresh install of Raspberry Pi OS with desktop,
-Copy the pic_frame directory into your home directory.
+clone the repository by typing in the terminal from your home directory
+git clone https://github.com/skydivr12/pic_frame
 Run install script with 'bash pic_frame/install_master.sh'
 There are 2 points of user interaction during the install process. Follow the instructions and once the installation is complete
 the pictureframe can be operational.
