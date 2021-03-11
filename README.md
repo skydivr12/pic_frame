@@ -1,6 +1,8 @@
 # pi3d_pictureframe_menu
 Pi3d pictureframe with dummy menu. 
 
+I continually come up with new ideas to add to this as well as find and fix bugs. Check back occasionally for the latest files. Sorry I dont know how to use git very well this probably isn't commented as well as it could be but that is something I also continue to work on.
+
 This is essentially my first foray into anything linux. Having never done any kind of programming of any sort, this is my
 beginners project. I set out to build a smart digital pictureframe to build as a gift for grandma. Pi3d software is perfect
 for this as it comes with a python script just for this purpose, along with a config script that makes the pictureframe
