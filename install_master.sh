@@ -39,6 +39,38 @@ sudo ln -sf $HOME/pic_frame/bin/* /usr/local/bin/
 sudo cp $HOME/pic_frame/systemd/* /etc/systemd/system/
 mkdir -p $LOG_DIR
 
+if [ "$MODEL" -le 3 ]; then
+  sudo raspi-config nonint do_memory_split 256
+else
+  sudo raspi-config nonint do_memory_split 128
+fi
+
+sudo raspi-config nonint do_ssh 0 &&
+sudo mkdir -p /root/.config/rclone &&
+sudo mkdir -p $HOME/.frame_updates &&
+touch $LOG1 &&
+touch $LOG2 &&
+sudo chmod +766 $LOG1 &&
+sudo chmod +766 $LOG2 &&
+
+
+if [ ! -f "$IP_FILE_BACKUP" ]; then
+  sudo cp $IP_FILE $IP_FILE_BACKUP &&
+  echo " Backing up dhcpd.conf"
+fi
+
+# Creates file to disable screen blanking.
+if [ ! -f "$PICTUREFRAME_AUTOSTART" ]; then
+  sudo cp $AUTOSTART_FILE $AUTOSTART_FILE_BACKUP &&
+  sudo chown pi:pi $AUTOSTART_FILE &&
+  sudo sed -i 's/@xscreensaver -no-splash/@xset s off/' $AUTOSTART_FILE &&
+  echo '@xset -dpms' >> $AUTOSTART_FILE &&
+  echo '@xset s noblank' >> $AUTOSTART_FILE &&
+  sudo chown root:root $AUTOSTART_FILE &&
+  sudo cp $AUTOSTART_FILE $PICTUREFRAME_AUTOSTART &&
+  sudo cp $AUTOSTART_FILE_BACKUP $AUTOSTART_FILE
+fi
+
 # Introduction text.
 echo ' Welcome. I am about to install all the software necessary to' &&
 echo ' run your new digital picture frame. There are a few things that' &&
@@ -78,13 +110,11 @@ continue_prompt
 
 
 # Installs samba.
-sudo apt install samba samba-common-bin smbclient cifs-utils -y &&
 
 
 # Edits samba config file with necessary changes to make visible on windows networks.
-if [ -f "$SMB_CONF_BACKUP" ]; then
-  echo " Samba has already been setup correctly. Skipping."
-else
+if [ ! -f "$SMB_CONF_BACKUP" ]; then
+  sudo apt install samba samba-common-bin smbclient cifs-utils -y &&
   sed -n '1,169p;170q' $SMB_CONF > $SMB_EDIT &&
   echo '[pi]' >> $SMB_EDIT &&
   echo 'comment = Pi' >> $SMB_EDIT &&
@@ -100,15 +130,13 @@ else
   sudo chown root:root $SMB_CONF &&
   sudo /etc/init.d/smbd restart
 fi
-clear && echo " Samba installed successfully. Continuing" && sleep 2 &&
+clear && echo " Samba installed successfully. Continuing" &&
 
 
 # Installs Web Service Discovery Daemon. Software that will allow the
 # pictureframe to be visible on windows network computers. Installs
 # software to make linux machine visible to windows network.
-if [ -f "$sysdir/wsdd.service" ]; then
-  echo " WSDD has already been installed. Skipping"
-else
+if [ ! -f "$sysdir/wsdd.service" ]; then
   cd /tmp && sudo wget https://github.com/christgau/wsdd/archive/master.zip &&
   unzip master.zip &&
   sudo mv wsdd-master/src/wsdd.py wsdd-master/src/wsdd &&
@@ -122,12 +150,22 @@ else
   sudo systemctl enable wsdd
 fi
 
+# Installs other necessary software.
+sudo apt install -y mosquitto mosquitto-clients -y &&
+sudo apt install php php-common gcc -y &&
+sudo apt install imagemagick -y &&
+sudo apt install rename &&
+# Installs software that allows us to sync from cloud services.
+sudo apt install rclone -y &&
+
+sudo pip3 install paho-mqtt &&
+#sudo pip install paho-mqtt &&
+
+
 # Installs slideshow software.
-if [ -d "$HOME/pi3d_demos" ]; then
-  echo " Pi3D has already been installed and setup. Skipping."
-else
-#  sudo pip3 install pi3d && #Stopped working 3-5-21
-  sudo pip install pi3d==2.42
+if [ ! -d "$HOME/pi3d_demos" ]; then
+  sudo pip3 install pi3d &&
+#  sudo pip install pi3d==2.43
   wget https://github.com/pi3d/pi3d_demos/archive/master.zip && unzip master.zip && rm master.zip &&
   mv pi3d_demos-master pi3d_demos &&
   sudo cp $FRAME_CONFIG $FRAME_CONFIG_BACKUP &&
@@ -135,52 +173,5 @@ else
   sed -i "155s/'.png'/'.tiff','.dng','.png'/" $FRAME_PY
 fi
 
-# Installs other necessary software.
-sudo apt install -y mosquitto mosquitto-clients -y &&
-#sudo pip3 install paho-mqtt &&  #stopped working 3-5-21
-sudo pip install paho-mqtt 
-sudo apt install php php-common gcc -y &&
-sudo apt install imagemagick -y &&
-sudo apt install rename &&
-# Installs software that allows us to sync from cloud services.
-sudo apt install rclone -y &&
-
-if [ "$MODEL" -le 3 ]; then
-  sudo raspi-config nonint do_memory_split 256
-else
-  sudo raspi-config nonint do_memory_split 128
-fi
-
-sudo raspi-config nonint do_ssh 0 &&
-sudo mkdir -p /root/.config/rclone &&
-sudo mkdir -p $HOME/.frame_updates &&
-touch $LOG1 &&
-touch $LOG2 &&
-sudo chmod +766 $LOG1 &&
-sudo chmod +766 $LOG2 &&
-
-
-if [ -f "$IP_FILE_BACKUP" ]; then
-  echo " dhcpcd.conf.backup already exists. Skipping."
-else
-  sudo cp $IP_FILE $IP_FILE_BACKUP &&
-  echo " Backing up dhcpd.conf"
-fi
-
-# Creates file to disable screen blanking.
-if [ -f "$PICTUREFRAME_AUTOSTART" ]; then
-  echo " $PICTUREFRAME_AUTOSTART already exists. Skipping"
-else
-  sudo cp $AUTOSTART_FILE $AUTOSTART_FILE_BACKUP &&
-  sudo chown pi:pi $AUTOSTART_FILE &&
-  sudo sed -i 's/@xscreensaver -no-splash/@xset s off/' $AUTOSTART_FILE &&
-  echo '@xset -dpms' >> $AUTOSTART_FILE &&
-  echo '@xset s noblank' >> $AUTOSTART_FILE &&
-  sudo chown root:root $AUTOSTART_FILE &&
-  sudo cp $AUTOSTART_FILE $PICTUREFRAME_AUTOSTART &&
-  sudo cp $AUTOSTART_FILE_BACKUP $AUTOSTART_FILE
-fi
 clear && echo " All necessary software has now been installed successfully." &&
-sleep 10 &&
-#sed -i '32,160s/^./#&/' $0 &&
 echo "Done"
