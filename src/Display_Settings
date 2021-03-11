@@ -51,6 +51,26 @@ load_favorite_settings() {
   done
 }
 
+reload_previous_settings() {
+  if [ -f "$FRAME_CONFIG_LAST" ]; then
+    echo " Please select Yes to confirm that you want to re-load the last settings used, or No to return."
+    select i in "Yes" "No"; do
+      if [ "$i" == "No" ]; then
+        break
+      elif [ "$i" == "Yes" ]; then
+        sudo mv $FRAME_CONFIG_LAST $FRAME_CONFIG_EDIT
+        sudo cp $FRAME_CONFIG $FRAME_CONFIG_LAST
+        sudo mv $FRAME_CONFIG_EDIT $FRAME_CONFIG
+        sudo systemctl restart pi3donpi4.service
+        break
+      else
+        echo "$ERR_REPLY1"
+      fi
+    done
+  else
+    echo " I haven't changed the slideshow settings yet and so do not have settings to replace."
+  fi
+}
 
 all_display_settings() {
   OPTION_SET="ALL_OPTIONS"
