@@ -39,7 +39,7 @@ sudo ln -sf $HOME/pic_frame/bin/* /usr/local/bin/
 sudo cp $HOME/pic_frame/systemd/* /etc/systemd/system/
 mkdir -p $LOG_DIR
 
-if [ "$MODEL" -le 3 ]; then
+if [ "$MODEL" -le 3 2>/dev/null ] || [ "$MODEL" == "Zero" 2>/dev/null ]; then
   sudo raspi-config nonint do_memory_split 256
 else
   sudo raspi-config nonint do_memory_split 128
@@ -83,7 +83,7 @@ continue_prompt
 # Instructions to enable the proper GL driver.
 echo ' A window will open, use arrow keys to select option 6 Advanced options' &&
 echo ' and press enter. Then select A2 GL Driver and hit enter.' &&
-if [ "$MODEL" -le 3 ]; then
+if [ "$MODEL" -le 3 2>/dev/null ] || [ "$MODEL" == "Zero" 2>/dev/null ]; then
   echo ' Select G1 Legacy driver and hit enter. Hit enter again to confirm.'
 else
   echo ' Select G2 GL (Fake KMS) and hit enter. Hit enter again to confirm.'
