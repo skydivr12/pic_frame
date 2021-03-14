@@ -32,6 +32,10 @@ unset nothing
 clear
 }
 
+# 2 lines added to fix service files if user is other than pi.
+sed -i "s+home/pi+home/$USER+" $HOME/pic_frame/systemd/pi3donpi4.service
+sed -i "s+home/pi+home/$USER+" $HOME/pic_frame/systemd/frame_update.path
+
 sudo chmod +x $HOME/pic_frame/bin/*
 sudo chmod +x $HOME/pic_frame/src/*
 sudo chmod +644 $HOME/pic_frame/systemd/*
