@@ -23,33 +23,62 @@ save_these_settings() {
       echo " You selected No. Going back."
       break
     else
-      $ERR_REPLY1
+      echo "$ERR_REPLY1"
     fi
   done
 }
 
 load_favorite_settings() {
-  readarray -t CONFIG_BACKUPS < <( find "$BAK_DIR" -name "*.bak" -type f | rev | cut -d/ -f1 | rev | cut -d. -f1 )
-  echo " Select which favorite config you would like to load."
-  select OPT in "${CONFIG_BACKUPS[@]}" "Back"; do
-    if [ "$OPT" == "" ]; then
-      $ERR_REPLY1
-    elif [[ "${CONFIG_BACKUPS[@]}" =~ "$OPT" ]]; then
-      echo " You have selected $i. Are you sure you want to restore these settings?"
-      select OPT1 in "Yes" "No"; do break; done
-      if [ "$OPT1" == "Yes" ]; then
-        sudo cp "$BAK_DIR"/"$OPT".bak $FRAME_CONFIG
-        sudo systemctl restart pi3donpi4.service
+  if [ ! -f "$(find $BAK_DIR -name *.bak -type f)" ]; then
+    echo " There are no favorites saved yet."
+    sleep 2
+  else
+    readarray -t CONFIG_BACKUPS < <( find "$BAK_DIR" -name "*.bak" -type f | rev | cut -d/ -f1 | rev | cut -d. -f1 )
+    echo " Select which favorite config you would like to load."
+    select OPT in "${CONFIG_BACKUPS[@]}" "Back"; do
+      if [[ "${CONFIG_BACKUPS[@]}" =~ "$OPT" ]]; then
+        echo " You have selected $i. Are you sure you want to restore these settings?"
+        select OPT1 in "Yes" "No"; do break; done
+        if [ "$OPT1" == "Yes" ]; then
+          sudo cp "$BAK_DIR"/"$OPT".bak $FRAME_CONFIG
+          sudo systemctl restart pi3donpi4.service
+        fi
+        break
+      elif [ "$OPT" == "Back" ]; then
+        echo " You selected Back. Going back."
+        break
+      else
+        echo "$ERR_REPLY1"
       fi
-      break
-    elif [ "$OPT" == "Back" ]; then
-      echo " You selected Back. Going back."
-      break
-    else
-      $ERR_REPLY1
-    fi
-  done
+    done
+  fi
 }
+
+delete_favorite_settings() {
+  if [ ! -f "$(find $BAK_DIR -name *.bak -type f)" ]; then
+    echo " There are no favorites saved yet."
+    sleep 2
+  else
+    readarray -t CONFIG_BACKUPS < <( find "$BAK_DIR" -name "*.bak" -type f | rev | cut -d/ -f1 | rev | cut -d. -f1 )
+    echo " Select which favorite config you would like to delete."
+    select OPT in "${CONFIG_BACKUPS[@]}" "Back"; do
+      if [[ "${CONFIG_BACKUPS[@]}" =~ "$OPT" ]]; then
+        echo " You have selected $i. Are you sure you want to delete these settings?"
+        select OPT1 in "Yes" "No"; do break; done
+        if [ "$OPT1" == "Yes" ]; then
+          sudo rm "$BAK_DIR"/"$OPT".bak
+        fi
+        break
+      elif [ "$OPT" == "Back" ]; then
+        echo " You selected Back. Going back."
+        break
+      else
+        echo "$ERR_REPLY1"
+      fi
+    done
+  fi
+}
+
 
 reload_previous_settings() {
   if [ -f "$FRAME_CONFIG_LAST" ]; then
@@ -251,11 +280,13 @@ use_default_slideshow_settings() {
   save_input
   echo " i just set some default settings just answer yes here."
   replace_file
-#  sudo mv $FRAME_CONFIG_EDIT $FRAME_CONFIG
-#  sudo systemctl restart pi3donpi4.service
 }
 
 Back() {
   echo " This is function 7"
 }
+
+
+
+
 
