@@ -119,7 +119,7 @@ change_pictures_directory() {
   THESE_OPTIONS=( "${DIR_OPTIONS[@]}" )
   get_file
   select_options
-  replace file
+  replace_file
 }
 
 show_text_options() {

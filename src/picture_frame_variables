@@ -325,21 +325,21 @@ show_prompt() {
 save_input() {
   if [[ "$(grep "\-$VAR\"" "$FRAME_CONFIG_EDIT" | cut -d= -f2 | cut -c1)" =~ $ANY_CHAR ]]; then
     if [ "$VAR" == "use_mqtt" ]; then
-      sed -ri "${lnum}s/default=${VAR1}\)/default=${VAR2}\)/" $FRAME_CONFIG_EDIT
+      sed -ri "${lnum}s+default=${VAR1}\)+default=${VAR2}\)+" $FRAME_CONFIG_EDIT
       if [ "$VAR2" == "True" ]; then
         VAR="mqtt_server"
         line_setting
         VAR2="$MY_IP"
-        sed -ri "${lnum}s/default=\"${VAR1}\"/default=\"${VAR2}\"/" $FRAME_CONFIG_EDIT
+        sed -ri "${lnum}s+default=\"${VAR1}\"+default=\"${VAR2}\"+" $FRAME_CONFIG_EDIT
       fi
     else
-      sed -ri "${lnum}s/default=${VAR1},/default=${VAR2},/" $FRAME_CONFIG_EDIT
+      sed -ri "${lnum}s+default=${VAR1},+default=${VAR2},+" $FRAME_CONFIG_EDIT
     fi
   else
     if [ "$VAR" == "background" ]; then
-      sed -ri "${lnum}s/default=\(${VAR1}\),/default=\(${VAR2}\),/" $FRAME_CONFIG_EDIT
+      sed -ri "${lnum}s+default=\(${VAR1}\),+default=\(${VAR2}\),+" $FRAME_CONFIG_EDIT
     else
-      sed -ri "${lnum}s/default=\"${VAR1}\"/default=\"${VAR2}\"/" $FRAME_CONFIG_EDIT
+      sed -ri "${lnum}s+default=\"${VAR1}\"+default=\"${VAR2}\"+" $FRAME_CONFIG_EDIT
     fi
   fi
 #  unset VAR2
