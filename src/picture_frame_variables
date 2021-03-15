@@ -371,8 +371,11 @@ get_input() {
       done
     elif [ "$VAR" == "subdirectory" ]; then
       echo " Select which subdirectory you want to use."
-      select d in "${SUB_DIRS[@]}"; do
-        if [[ "${SUB_DIRS[@]}" =~ "$d" ]]; then
+      select d in "${SUB_DIRS[@]}" "None"; do
+        if [ "$d" == "None" ]; then
+          VAR2=""
+          break
+        elif [[ "${SUB_DIRS[@]}" =~ "$d" ]]; then
           VAR2="$d"
           break
         else
