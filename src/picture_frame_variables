@@ -68,6 +68,8 @@ RC1=$HOME/.config/rclone/rclone.conf
 RC2=/root/.config/rclone/rclone.conf
 #RC1=$HOME/fake_rclone.conf
 #RC2=$HOME/fake_rclone.conf.copy
+readarray -t MAIN_DIRS < <( find $HOME/Pictures -maxdepth 1 -type d )
+readarray -t SUB_DIRS < <( find $HOME/Pictures -mindepth 1 -type d )
 
 TIME_OPTIONS=( "time_delay" "fade_time" )
 BACKGROUND_OPTIONS=( "background" "blur_edges" "blur_amount" "blur_zoom" "edge_alpha" )
@@ -78,7 +80,7 @@ ADMIN_OPTIONS=( "check_dir_tm" "verbose" "fps" "no_files_img" "keyboard" "use_mq
 ALL_OPTIONS=( "${TIME_OPTIONS[@]}" "${BACKGROUND_OPTIONS[@]}" "${SPECIAL_OPTIONS[@]}" "${DIR_OPTIONS[@]}" "${TEXT_OPTIONS[@]}" "${ADMIN_OPTIONS[@]}" )
 
 T_F_OPTIONS=( "blur_edges" "verbose" "keyboard" "use_mqtt" "fit" "kenburns" "shuffle" "auto_resize" "delay_exif" "load_geoloc" )
-ENTER_VALUE_OPTIONS=( "blur_amount" "check_dir_tm" "edge_alpha" "fps" "mqtt_port" "mqtt_login" "mqtt_password" "recent_n" "reshuffle_num" "show_text_tm" "show_text_fm" "show_text_sz" "show_text" "text_width" "time_delay" "fade_time" "blur_zoom" "locale" "geo_key" "display_x" "display_y" "display_w" "display_h" )
+ENTER_VALUE_OPTIONS=( "blur_amount" "check_dir_tm" "edge_alpha" "fps" "mqtt_port" "pic_dir" "subdirectory" "mqtt_login" "mqtt_password" "recent_n" "reshuffle_num" "show_text_tm" "show_text_fm" "show_text_sz" "show_text" "text_width" "time_delay" "fade_time" "blur_zoom" "locale" "geo_key" "display_x" "display_y" "display_w" "display_h" )
 
 OPTIONS1=( "blur_amount" "blur_edges" "check_dir_tm" "edge_alpha" "fps" "keyboard" "recent_n" "show_text_tm" "show_text_sz" "text_width" "kenburns" "time_delay" "fade_time" "blur_zoom" "auto_resize" "display_x" "display_y" "display_w" "display_h" "verbose" "mqtt_port" "reshuffle_num" "delay_exif" )
 OPTIONS2=( "blend_type" "mqtt_server" "no_files_img" "subdirectory" "geo_path" "geo_key" "locale" "show_text_fm" "mqtt_login" "mqtt_password" "font_file" "shader" )
@@ -357,9 +359,32 @@ get_input() {
       fi
     done
   elif [[ "${ENTER_VALUE_OPTIONS[@]}" =~ "$VAR" ]]; then
-    read -p " Enter a new value. : " VAR2
-    if [ "$VAR2" == "" ]; then
-      VAR2="$VAR1"
+    if [ "$VAR" == "pic_dir" ]; then
+      echo " Select which directory you want to use as the primary pictures folder."
+      select d in "${MAIN_DIRS[@]}"; do
+        if [[ "${MAIN_DIRS[@]}" =~ "$d" ]]; then
+          VAR2="$d"
+          break
+        else
+          echo "$ERR_REPLY1"
+        fi
+      done
+    elif [ "$VAR" == "subdirectory" ]; then
+      echo " Select which subdirectory you want to use."
+      select d in "${SUB_DIRS[@]}"; do
+        if [[ "${SUB_DIRS[@]}" =~ "$d" ]]; then
+          VAR2="$d"
+          break
+        else
+          echo "$ERR_REPLY1"
+        fi
+        break
+      done
+    else
+      read -p " Enter a new value. : " VAR2
+      if [ "$VAR2" == "" ]; then
+        VAR2="$VAR1"
+      fi
     fi
 #    sed -ri "${lnum}s/default=${VAR1},/default=${VAR2},/" $FRAME_CONFIG_EDIT
   elif [ "$VAR" == "background" ]; then
