@@ -1,0 +1,99 @@
+
+#My system variables
+DIR=/usr/local/bin
+MY_IP=$(if [[ "$(grep 'wlan0' < <(ip -h address ) | grep 'inet')" != "" ]]; then ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}'; else echo "localhost"; fi)
+my_gateway=$(ip route get 8.8.8.8 | awk -F"via " 'NR==1{split($2,a," ");print a[1]}')
+PS3=" Choose an option. : " #select function prompt
+NOW=$(date +"%D_%T")
+BAK_DIR="$HOME/pic_frame/backups"
+
+BIN_DIR="$HOME/pic_frame/bin"
+ANY_CHAR="[a-zA-Z0-9]"
+
+#Frame config variables
+FRAME_PY="$HOME/PictureFrame2020.py"
+FRAME_PY_BACKUP="$BAK_DIR/PictureFrame2020.py.backup"
+FRAME_CONFIG="$HOME/pi3d_demos/PictureFrame2020config.py" #file to be manipulated
+FRAME_CONFIG_BACKUP="$BAK_DIR/PictureFrame2020config.py"
+FRAME_CONFIG_EDIT="$HOME/PictureFrame2020config.py"
+FRAME_CONFIG_LAST="$BAK_DIR/last_config.backup"
+bname=$(basename "$FRAME_CONFIG") #filename without directory path
+FRAME_CONFIG_EDIT="$HOME"/"$bname" #copy of file to be manipulated
+FADE_TYPE=( "blend" "burn" "bump" ) #array of  transition types
+
+#Menu script variables
+SRC_DIR=~/pic_frame/src
+F=$SRC_DIR/Main_Menu
+MENU_PATH=$(basename "$F")
+ERR_REPLY1=" Invalid option. Please select one of the listed options."
+
+#Download script variables
+SOURCES=( "emails" "gdrive" )
+UPDAT_DIR=$HOME/.frame_updates
+#LOG2=$UPDAT_DIR/update_log.txt
+#LOG1=$UPDAT_DIR/download_log.txt
+EMAILS=$BIN_DIR/get_images_from_emails.py
+EMAILS_FIL=$(basename "$EMAILS")
+EMAILS_BACKUP=$HOME/pic_frame/backups/$EMAILS_FIL.backup
+TEMP_EMAILS=/attachments
+TEMPDIR=$HOME/temp
+JUNK=$HOME/unknown_file_types
+DIRNOW=$(date +"%H-%M")
+
+#SCRIPT="${0##*/}" #basename of this script
+#DIR="$( cd "$( dirname "$0" )" >/dev/null 2>&1 && pwd )" #directory path of this script
+BIN_DIR="$HOME/pic_frame/bin"
+BAK_DIR="$HOME/pic_frame/backups"
+SYS_DIR="$HOME/pic_frame/systemd"
+SRC_DIR="$HOME/pic_frame/src"
+sysdir="/etc/systemd/system"
+LOG_DIR="$HOME/pic_frame/logs"
+LOG1="$LOG_DIR/download_log.txt"
+LOG2="$LOG_DIR/update_log.txt"
+MODEL=$(cat /proc/device-tree/model | awk -F"Pi " 'NR==1{split($2,a," ");print a[1]}')
+IP_FILE="/etc/dhcpcd.conf"
+IP_FILE_BACKUP="$HOME/pic_frame/backups/dhcpcd.conf.backup"
+IP_FILE_EDIT="$HOME/dhcpcd.conf"
+SMB_CONF=/etc/samba/smb.conf
+SMB_CONF_BACKUP=$BAK_DIR/smb.conf.backup
+SMB_EDIT=$HOME/smb.conf
+AUTOSTART_FILE="/etc/xdg/lxsession/LXDE-pi/autostart"
+AUTOSTART_FILE_BACKUP="$BAK_DIR/autostart.backup"
+PICTUREFRAME_AUTOSTART="$BAK_DIR/autostart.pictureframe"
+PI3DIR="$HOME/pi3d_demos"
+pfpy="PictureFrame2020.py"
+pfcpy="PictureFrame2020config.py"
+RC1=$HOME/.config/rclone/rclone.conf
+RC2=/root/.config/rclone/rclone.conf
+#RC1=$HOME/fake_rclone.conf
+#RC2=$HOME/fake_rclone.conf.copy
+readarray -t MAIN_DIRS < <( find $HOME/Pictures -maxdepth 1 -type d )
+readarray -t SUB_DIRS < <( find $HOME/Pictures -mindepth 1 -type d )
+
+#ALL_OPTIONS=( "${TIME_OPTIONS[@]}" "${BACKGROUND_OPTIONS[@]}" "${SPECIAL_OPTIONS[@]}" "${DIR_OPTIONS[@]}" "${TEXT_OPTIONS[@]}" "${ADMIN_OPTIONS[@]}" )
+readarray -t ALL_OPTIONS < <( grep "\-\-.*\", *default" "$FRAME_CONFIG" | cut -d= -f1 | rev | cut -d\- -f1 | cut -d\" -f2 | rev )
+
+#T_F_OPTIONS=( "blur_edges" "verbose" "keyboard" "use_mqtt" "fit" "kenburns" "shuffle" "auto_resize" "delay_exif" "load_geoloc" )
+readarray -t TF_OPTIONS < <( for ((i = 0; i < ${#ALL_OPTIONS[@]}; i++)); do if [[ "$(grep -n "\-\-${ALL_OPTIONS[$i]}\", *default" "$FRAME_CONFIG" | cut -d= -f2 | grep "^[TF]" | cut -c1)" =~ [TF] ]]; then echo "${ALL_OPTIONS[$i]}"; fi; done )
+
+readarray -t SELECTION_OPTIONS < <( for ((i = 0; i < ${#ALL_OPTIONS[@]}; i++)); do if [[ "$(grep -n "\-\-${ALL_OPTIONS[$i]}\", *default" "$FRAME_CONFIG" | cut -d= -f2 | grep "^[\"]" | cut -c1)" == \" ]]; then echo "${ALL_OPTIONS[$i]}"; fi; done )
+#ENTER_VALUE_OPTIONS=( "blur_amount" "check_dir_tm" "edge_alpha" "fps" "mqtt_port" "pic_dir" "subdirectory" "mqtt_login" "mqtt_password" "recent_n" "reshuffle_num" "show_text_tm" "show_text_fm" "show_text_sz" "show_text" "text_width" "time_delay" "fade_time" "blur_zoom" "locale" "geo_key" "display_x" "display_y" "display_w" "display_h" )
+readarray -t ENTER_VALUE_OPTIONS < <( for ((i = 0; i < ${#ALL_OPTIONS[@]}; i++)); do if [[ ! "${TF_OPTIONS[@]}" =~ "${ALL_OPTIONS[$i]}" ]]; then echo "${ALL_OPTIONS[$i]}"; fi; done )
+
+TIME_OPTIONS=( "time_delay" "fade_time" )
+BACKGROUND_OPTIONS=( "background" "blur_edges" "blur_amount" "blur_zoom" "edge_alpha" )
+SPECIAL_OPTIONS=( "blend_type" "recent_n" "fit" "kenburns" "shuffle" )
+DIR_OPTIONS=( "pic_dir" "subdirectory" )
+TEXT_OPTIONS=( "show_text_tm" "show_text_fm" "show_text_sz" "show_text" "text_width" "load_geoloc" "geo_key" "geo_path" )
+ADMIN_OPTIONS=( "check_dir_tm" "verbose" "fps" "no_files_img" "keyboard" "use_mqtt" "mqtt_server" "mqtt_port" "mqtt_login" "mqtt_password" "font_file" "shader" "reshuffle_num" "auto_resize" "delay_exif" "locale" "display_x" "display_y" "display_w" "display_h" )
+
+OPTIONS1=( "blur_amount" "blur_edges" "check_dir_tm" "edge_alpha" "fps" "keyboard" "recent_n" "show_text_tm" "show_text_sz" "text_width" "kenburns" "time_delay" "fade_time" "blur_zoom" "auto_resize" "display_x" "display_y" "display_w" "display_h" "verbose" "mqtt_port" "reshuffle_num" "delay_exif" )
+OPTIONS2=( "no_files_img" "blend_type" "mqtt_server" "mqtt_login" "mqtt_password" "font_file" "shader" "show_text_fm" "subdirectory" "locale" "geo_key" "geo_path" )
+readarray -t OPTIONS3 < <( for ((i = 0; i < ${#ALL_OPTIONS[@]}; i++)); do if [[ "$(grep -n "\-\-${ALL_OPTIONS[$i]}\", *default" "$FRAME_CONFIG" | cut -d= -f2 | grep "^[0-9a-zA-Z]" | cut -d, -f1 | grep ")")" ]]; then echo "${ALL_OPTIONS[$i]}"; fi; done )
+#OPTIONS3=( "use_mqtt" )
+OPTIONS4=( "fit" "load_geoloc" )
+OPTIONS5=( "show_text" )
+OPTIONS6=( "background" )
+#OPTIONS7=( "pic_dir" )
+OPTIONS8=( "${OPTIONS1[@]}" "${OPTIONS2[@]}" "${OPTIONS3[@]}" "${OPTIONS4[@]}" "${OPTIONS5[@]}" "${OPTIONS6[@]}" "${OPTIONS7[@]}" )
+
