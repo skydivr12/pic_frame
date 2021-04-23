@@ -3,12 +3,12 @@
 TODAY=$(date +"%Y_%m_%d")
 NOW=$(date +"%D_%T")
 UPDAT_DIR=$HOME/.frame_updates
-LOG1="$HOME/pic_frame/logs/download_log.txt"
-LOG1_LENGTH=$(wc -l < $LOG1)
-LOG2="$HOME/pic_frame/logs/update_log.txt"
-LOG2_LENGTH=$(wc -l < $LOG2)
+#LOG1="$HOME/pic_frame/logs/download_log.txt"
+#LOG1_LENGTH=$(wc -l < $LOG1)
+#LOG2="$HOME/pic_frame/logs/update_log.txt"
+#LOG2_LENGTH=$(wc -l < $LOG2)
 BIN_DIR=$HOME/pic_frame/bin
-EMAILS_BACKUP=$HOME/pic_frame/backups/get_images_from_emails.py.backup
+#EMAILS_BACKUP=$HOME/pic_frame/backups/get_images_from_emails.py.backup
 JUNK=$HOME/unknown_file_types
 RC_CONF=$HOME/.config/rclone/rclone.conf
 readarray -t RCSOURCES < <(grep "\[[a-zA-Z0-9]*\]" $RC_CONF 2>/dev/null | cut -d[ -f2 | cut -d] -f1)
@@ -18,8 +18,8 @@ LEN2="${#MAILSOURCES[@]}"
 SOURCES=( "${MAILSOURCES[@]}" "${RCSOURCES[@]}" )
 
 
-if [ "$LOG1_LENGTH" -gt "1000" ]; then mv $LOG1 $LOG1_$TODAY; fi
-if [ "$LOG2_LENGTH" -gt "1000" ]; then mv $LOG2 $LOG2_$TODAY; fi
+#if [ "$LOG1_LENGTH" -gt "1000" ]; then mv $LOG1 $LOG1_$TODAY; fi
+#if [ "$LOG2_LENGTH" -gt "1000" ]; then mv $LOG2 $LOG2_$TODAY; fi
 
 prompt() {
   read -p " Press enter to continue or CTL C to cancel."

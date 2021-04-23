@@ -3,7 +3,7 @@
 #Executes all .sh files found in .frame_updates folder and removes them.
 #This allows updates to pictureframe software to be updated by the builder.
 
-. $HOME/pic_frame/src/picture_frame_variables
+. $HOME/pic_frame/src/variables.txt
 
 if [ -f "$(find "$UPDAT_DIR" -name "*.sh")" ]; then
   for f in "$(find "$UPDAT_DIR" -name "*.sh")"; do

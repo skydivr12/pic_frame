@@ -1,7 +1,7 @@
 #!/bin/bash
 
-. ~/pic_frame/src/picture_frame_variables
-SERVICES=( "display_off.timer" "display_on.timer" "download_pics.timer" "pi3donpi4.service" "frame_update.path" )
+. ~/pic_frame/src/picture_frame_functions
+SERVICES=( "display_off.timer" "display_on.timer" "pi3donpi4.service" "frame_update.path" )
 
 disable_frame_services() {
   for SERV in "${SERVICES[@]}"; do

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. ~/pic_frame/src/picture_frame_variables
+. ~/pic_frame/src/picture_frame_functions
 
 set_src
 
