@@ -2,7 +2,10 @@
 Description=Schedules downloading of pictures from email and google drive every 15 minutes.
 
 [Timer]
-OnCalendar=*:0/15
+#Uncomment next line for syncing every 15 minutes
+#OnCalendar=*:0/15
+#Uncomment next line for syncing just 3 times per day
+OnCalendar=6,12,18:0
 RandomizedDelaySec=300
 
 Persistent=true
