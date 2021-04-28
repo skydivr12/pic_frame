@@ -37,6 +37,7 @@ set_display_overscan() {
 }
 
 set_static_ip() {
+  my_gateway=$(ip route get 8.8.8.8 | awk -F"via " 'NR==1{split($2,a," ");print a[1]}')
   cp $IP_FILE_BACKUP $IP_FILE_EDIT &&
   echo "interface wlan0" >> $IP_FILE_EDIT &&
   echo "static ip_address=$MY_IP/24" >> $IP_FILE_EDIT &&

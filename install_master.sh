@@ -1,15 +1,15 @@
 #!/bin/bash
-SCRIPT="${0##*/}" #basename of this script
-DIR="$( cd "$( dirname "$0" )" >/dev/null 2>&1 && pwd )" #directory path of this script
-NOW=$(date +"%D_%T")
-BIN_DIR="$HOME/pic_frame/bin"
+#SCRIPT="${0##*/}" #basename of this script
+#DIR="$( cd "$( dirname "$0" )" >/dev/null 2>&1 && pwd )" #directory path of this script
+#NOW=$(date +"%D_%T")
+#BIN_DIR="$HOME/pic_frame/bin"
 BAK_DIR="$HOME/pic_frame/backups"
-SYS_DIR="$HOME/pic_frame/systemd"
-SRC_DIR="$HOME/pic_frame/src"
+#SYS_DIR="$HOME/pic_frame/systemd"
+#SRC_DIR="$HOME/pic_frame/src"
 sysdir="/etc/systemd/system"
-LOG_DIR="$HOME/pic_frame/logs"
-LOG1="$LOG_DIR/download_log.txt"
-LOG2="$LOG_DIR/update_log.txt"
+#LOG_DIR="$HOME/pic_frame/logs"
+#LOG1="$LOG_DIR/download_log.txt"
+#LOG2="$LOG_DIR/update_log.txt"
 MODEL=$(cat /proc/device-tree/model | awk -F"Pi " 'NR==1{split($2,a," ");print a[1]}')
 IP_FILE="/etc/dhcpcd.conf"
 IP_FILE_BACKUP="$HOME/pic_frame/backups/dhcpcd.conf.backup"
@@ -37,7 +37,7 @@ sudo chmod +x $HOME/pic_frame/src/*
 sudo chmod +644 $HOME/pic_frame/systemd/*
 sudo ln -sf $HOME/pic_frame/bin/* /usr/local/bin/
 sudo cp $HOME/pic_frame/systemd/* /etc/systemd/system/
-mkdir -p $LOG_DIR
+#mkdir -p $LOG_DIR
 
 if [ "$MODEL" -le 3 2>/dev/null ] || [ "$MODEL" == "Zero" 2>/dev/null ]; then
   sudo raspi-config nonint do_memory_split 256

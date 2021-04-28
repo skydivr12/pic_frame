@@ -2,9 +2,9 @@
 #My system variables
 DIR=/usr/local/bin
 MY_IP=$(if [[ "$(grep 'wlan0' < <(ip -h address ) | grep 'inet')" != "" ]]; then ip route get 8.8.8.8 | awk -F"src " 'NR==1{split($2,a," ");print a[1]}'; else echo "localhost"; fi)
-my_gateway=$(ip route get 8.8.8.8 | awk -F"via " 'NR==1{split($2,a," ");print a[1]}')
+#my_gateway=$(ip route get 8.8.8.8 | awk -F"via " 'NR==1{split($2,a," ");print a[1]}')
 PS3=" Choose an option. : " #select function prompt
-NOW=$(date +"%D_%T")
+#NOW=$(date +"%D_%T")
 BAK_DIR="$HOME/pic_frame/backups"
 
 BIN_DIR="$HOME/pic_frame/bin"
@@ -42,27 +42,27 @@ DIRNOW=$(date +"%H-%M")
 
 #SCRIPT="${0##*/}" #basename of this script
 #DIR="$( cd "$( dirname "$0" )" >/dev/null 2>&1 && pwd )" #directory path of this script
-BIN_DIR="$HOME/pic_frame/bin"
+#BIN_DIR="$HOME/pic_frame/bin"
 BAK_DIR="$HOME/pic_frame/backups"
 SYS_DIR="$HOME/pic_frame/systemd"
 SRC_DIR="$HOME/pic_frame/src"
-sysdir="/etc/systemd/system"
+#sysdir="/etc/systemd/system"
 LOG_DIR="$HOME/pic_frame/logs"
 LOG1="$LOG_DIR/download_log.txt"
 LOG2="$LOG_DIR/update_log.txt"
-MODEL=$(cat /proc/device-tree/model | awk -F"Pi " 'NR==1{split($2,a," ");print a[1]}')
+#MODEL=$(cat /proc/device-tree/model | awk -F"Pi " 'NR==1{split($2,a," ");print a[1]}')
 IP_FILE="/etc/dhcpcd.conf"
 IP_FILE_BACKUP="$HOME/pic_frame/backups/dhcpcd.conf.backup"
 IP_FILE_EDIT="$HOME/dhcpcd.conf"
-SMB_CONF=/etc/samba/smb.conf
-SMB_CONF_BACKUP=$BAK_DIR/smb.conf.backup
-SMB_EDIT=$HOME/smb.conf
+#SMB_CONF=/etc/samba/smb.conf
+#SMB_CONF_BACKUP=$BAK_DIR/smb.conf.backup
+#SMB_EDIT=$HOME/smb.conf
 AUTOSTART_FILE="/etc/xdg/lxsession/LXDE-pi/autostart"
 AUTOSTART_FILE_BACKUP="$BAK_DIR/autostart.backup"
 PICTUREFRAME_AUTOSTART="$BAK_DIR/autostart.pictureframe"
-PI3DIR="$HOME/pi3d_demos"
-pfpy="PictureFrame2020.py"
-pfcpy="PictureFrame2020config.py"
+#PI3DIR="$HOME/pi3d_demos"
+#pfpy="PictureFrame2020.py"
+#pfcpy="PictureFrame2020config.py"
 RC1=$HOME/.config/rclone/rclone.conf
 RC2=/root/.config/rclone/rclone.conf
 #RC1=$HOME/fake_rclone.conf

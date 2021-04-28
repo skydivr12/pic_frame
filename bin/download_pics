@@ -1,7 +1,7 @@
 #!/bin/bash
 
 TODAY=$(date +"%Y_%m_%d")
-NOW=$(date +"%D_%T")
+#NOW=$(date +"%D_%T")
 UPDAT_DIR=$HOME/.frame_updates
 #LOG1="$HOME/pic_frame/logs/download_log.txt"
 #LOG1_LENGTH=$(wc -l < $LOG1)
