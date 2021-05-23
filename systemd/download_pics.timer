@@ -4,8 +4,14 @@ Description=Schedules downloading of pictures from email and google drive every 
 [Timer]
 #Uncomment next line for syncing every 15 minutes
 #OnCalendar=*:0/15
-#Uncomment next line for syncing just 3 times per day
+#Uncomment next line for syncing every 30 minutes
+#OnCalendar=*:0/30
+#Uncomment next line for syncing every hour
+#OnCalendar=*:0
+#Uncomment next line for syncing at 6am, noon, and 6pm.
 OnCalendar=6,12,18:0
+#Uncomment next line for syncing at 6am and every 4 hours after
+#OnCalendar=6/4:0
 RandomizedDelaySec=300
 
 Persistent=true
