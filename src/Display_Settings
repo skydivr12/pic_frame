@@ -175,7 +175,7 @@ set_display_off_time() {
   sudo cp $f1 $f2
   read -p "Enter the time of day you want the display to turn off. 7:00 is 7 am, 19:00 is 7 pm : " f3
   sudo sed -i "s/21:00/$f3/" "$f2"
-  sudo mv f2 f3
+  sudo mv $f2 $f3
   sudo systemctl daemon-reload
   sudo systemctl restart display_off.timer
 }
@@ -187,7 +187,7 @@ set_display_on_time() {
   sudo cp $f1 $f2
   read -p "Enter the time of day you want the display to turn on. 7:00 is 7 am, 19:00 is 7 pm : " f3
   sudo sed -i "s/7:00/$f3/" "$f2"
-  sudo mv f2 f3
+  sudo mv $f2 $f3
   sudo systemctl daemon-reload
   sudo systemctl restart display_on.timer
 }
